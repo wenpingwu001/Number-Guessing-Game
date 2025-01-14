@@ -14,21 +14,23 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-let levelMap = {
+const levelMap = {
   1: 'Easy',
   2: 'Medium',
   3: 'Hard',
 };
 
-let chancesMap = {
+const chancesMap = {
   1: 10,
   2: 5,
   3: 3,
 };
 
 async function getAnswer(prompt) {
-  return new Promise((resolve, reject) => {
-    rl.question(prompt, resolve);
+  return new Promise((resolve) => {
+    rl.question(prompt, (answer) => {
+      resolve(answer);
+    });
   });
 }
 async function getInput() {
@@ -70,6 +72,7 @@ console.log(
   `Great! You have selected the ${levelMap[level]} difficulty level.\nLet's start the game!`
 );
 
+const startTime = Date.now();
 let chances = chancesMap[level];
 let randomNumber = generateRandomNumber();
 let attempts = 0;
@@ -77,9 +80,12 @@ while (chances > 0) {
   let guess = await getRandomNumber();
   attempts++;
   if (guess === randomNumber) {
+    const endTime = Date.now();
+    const timeTaken = endTime - startTime;
     console.log(
       `Congratulations! You guessed the correct number in ${attempts} attempts.`
     );
+    console.log(`Time taken: ${timeTaken / 1000} seconds`);
     break;
   } else if (guess < randomNumber) {
     console.log(`Incorrect! You have to guess higher than ${guess}.`);
@@ -90,6 +96,7 @@ while (chances > 0) {
   if (chances === 0) {
     const answer = await anotherRound();
     if (answer === true) {
+      startTime = Date.now();
       chances = chancesMap[level];
       randomNumber = generateRandomNumber();
       attempts = 0;
